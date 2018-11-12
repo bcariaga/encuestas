@@ -9,7 +9,7 @@ class Pregunta
 private:
     string textoPregunta;
     string[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES] opciones;
-    bool validarRespuesta();
+    bool validarRespuesta(string respuesta);
 public:
     Pregunta(string textoPregunta, string[] opciones);
     string preguntar();
