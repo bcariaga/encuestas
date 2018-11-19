@@ -18,26 +18,6 @@ const string PREGUNTA_PALABRA_ESCAPE = "nn";
 /*===================================================================*/
 
 
-/*==================Prototipo Clase Encuesta========================*/
-//Esta clase va a tener informacion de la encuesta,
-//contiene las preguntas y los sujetos (con las respuestas)
-//se encarga de "hacer" las preguntas a cada Sujeto
-class Encuesta
-{
-private:
-    string nombre; //nombre de la encuesta
-    Pregunta[ENCUESTA_CANTIDAD_PREGUNTAS] preguntas; //preguntas de la encuesta
-    Sujeto[ENCUESTA_CANTIDAD_MAXIMA_SUJETOS] sujetosEncuestados; //los sujetos encuestados se guardan aca
-    int cantidadEncuestados = 0; //contador de sujetos encuestados
-    bool finalizada = false; //flag que cierra la encuesta (no permite realizar mas preguntas)
-public:
-    Encuesta(string nombre, Pregunta[ENCUESTA_CANTIDAD_PREGUNTAS] preguntas);
-    void encuestar(Sujeto sujeto);
-    bool finalizada();
-    void mostrarResultados();
-};
-/*===================================================================*/
-
 /*==================Prototipo Clase Pregunta========================*/
 
 //Esta clase es la encargada de mostrar la pregunta por pantalla
@@ -46,15 +26,15 @@ class Pregunta
 {
 private:
     string textoPregunta; //el enunciado de la pregunta Ej: "¿cual es tu comida favorita?"
-    string[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES] opciones; //respuestas disponibles para la pregunta.
+    string* opciones; //respuestas disponibles para la pregunta.
     bool validarRespuesta(string respuesta); 
 public:
-    Pregunta(string textoPregunta, string[] opciones);
+    Pregunta();
+    Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES]);
     string preguntar();
 };
 
 /*===================================================================*/
-
 
 /*==================Prototipo Clase Sujeto========================*/
 
@@ -62,14 +42,32 @@ public:
 class Sujeto
 {
 private:
-    string[ENCUESTA_CANTIDAD_PREGUNTAS] respuestas; //array con las respuestas generadas
+    string respuestas[ENCUESTA_CANTIDAD_PREGUNTAS]; //array con las respuestas generadas
 public:
-    Sujeto();
-    void responder(Pregunta[ENCUESTA_CANTIDAD_PREGUNTAS] preguntas);
+    void responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS]);
     string getRespuesta(int indice);
 };
 /*===================================================================*/
 
+/*==================Prototipo Clase Encuesta========================*/
+//Esta clase va a tener informacion de la encuesta,
+//contiene las preguntas y los sujetos (con las respuestas)
+//se encarga de "hacer" las preguntas a cada Sujeto
+class Encuesta
+{
+private:
+    string nombre; //nombre de la encuesta
+    Pregunta* preguntas; //preguntas de la encuesta
+    Sujeto sujetosEncuestados[ENCUESTA_CANTIDAD_MAXIMA_SUJETOS]; //los sujetos encuestados se guardan aca
+    int cantidadEncuestados = 0; //contador de sujetos encuestados
+    bool finalizada = false; //flag que cierra la encuesta (no permite realizar mas preguntas)
+public:
+    Encuesta(string _nombre, Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNTAS]);
+    void encuestar(Sujeto sujeto);
+    bool getFinalizada();
+    void mostrarResultados();
+};
+/*===================================================================*/
 
 /*===========================Main=====================================*/
 
@@ -81,82 +79,21 @@ main()
 
     return 0;
 }
-//TODO
-Encuesta crearEncuesta()
-{
-       
-    Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
-    preguntas[0] = new Pregunta("Pregunta?", ["opcion 1", "opcion 2"]);
-    preguntas[1] = new Pregunta("Pregunta 2 ?", ["opcion 1", "opcion 2"]);
-    Encuesta = new Encuesta("pepe", preguntas);
-    return Encuesta;
-}
-
-/*===================================================================*/
 
 
-/*=======================Metodos Clase Encuesta=======================*/
-//constructor Encuesta
-Encuesta::Encuesta(string nombre, Pregunta[ENCUESTA_CANTIDAD_PREGUNTAS] preguntas)
-{
-    this.nombre = nombre;
-    this.preguntas = preguntas;
-}
-//Valida que se pueda seguir encuestando
-//Recibe un objeto Sujeto y "realiza" las preguntas
-void Encuesta::encuestar(Sujeto sujeto)
-{
-    //valido no haber superado el tope de sujetos a encuestar
-    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS) 
-        finalizada = true;
-    
-    //si puedo seguir encuestando
-    if (!finalizada) 
-    {
-        //pido al sujeto que responda
-        sujeto.responder(preguntas);
-        //valido si hay que parar (si el usuario responde nn en la 1er pregunta)
-        if(sujeto.getRespuesta(0) == PREGUNTA_PALABRA_ESCAPE )
-        {
-            finalizada = true;
-        }
-        else
-        {
-            //agrego el sujeto al array de sujetos encuestados
-            sujetosEncuestados[cantidadEncuestados] = sujeto;
-            // incremento el indice de encuestados
-            cantidadEncuestados++; 
-        }
-        
-    }
-}
-
-//expone la propiedad interna "finalizada"
-bool Encuesta::finalizada()
-{
-    return finalizada;
-}
-
-//Este metodo va a ordenar las respuestas y printearlas por consola
-void Encuesta::mostrarResultados()
-{
-    //TODO: implementar metodo
-
-    //ordenar resultados
-
-    //mostrar resultados
-
-    cout << "Resultados cantidad de encuestados: " << cantidadEncuestados; 
-}
 /*===================================================================*/
 
 
 /*=======================Metodos Clase Pregunta======================*/
 //constructor Pregunta
-Pregunta::Pregunta(string textoPregunta, string[] opciones)
+Pregunta::Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES])
 {
-    this.textoPregunta = textoPregunta;
-    this.opciones = opciones;    
+    textoPregunta = _textoPregunta;
+    opciones = _opciones;    
+}
+Pregunta::Pregunta()
+{
+    textoPregunta = "";
 }
 //Se encarga de mostrar la preguntas y las opciones por pantalla
 //y valida que la respuesta sea valida
@@ -208,7 +145,7 @@ bool Pregunta::validarRespuesta(string respuesta)
 /*==================Prototipo Clase Sujeto========================*/
 //esta funcion llena el array de respuestas
 //usa los metodos de Pregunta para obtener respuestas
-void Sujeto::responder(Pregunta[ENCUESTA_CANTIDAD_PREGUNTAS] preguntas)
+void Sujeto::responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
 {
     //por cada pregunta...
 
@@ -225,3 +162,75 @@ string Sujeto::getRespuesta(int indice)
     //retorno respuesta
 }
 /*===================================================================*/
+
+
+/*=======================Metodos Clase Encuesta=======================*/
+//constructor Encuesta
+Encuesta::Encuesta(string _nombre, Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
+{
+    nombre = _nombre;
+    preguntas = _preguntas;
+}
+//Valida que se pueda seguir encuestando
+//Recibe un objeto Sujeto y "realiza" las preguntas
+void Encuesta::encuestar(Sujeto sujeto)
+{
+    //valido no haber superado el tope de sujetos a encuestar
+    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS) 
+        finalizada = true;
+    
+    //si puedo seguir encuestando
+    if (!finalizada) 
+    {
+        //pido al sujeto que responda
+        sujeto.responder(preguntas);
+        //valido si hay que parar (si el usuario responde nn en la 1er pregunta)
+        if(sujeto.getRespuesta(0) == PREGUNTA_PALABRA_ESCAPE )
+        {
+            finalizada = true;
+        }
+        else
+        {
+            //agrego el sujeto al array de sujetos encuestados
+            sujetosEncuestados[cantidadEncuestados] = sujeto;
+            // incremento el indice de encuestados
+            cantidadEncuestados++; 
+        }
+        
+    }
+}
+
+//expone la propiedad interna "finalizada"
+bool Encuesta::getFinalizada()
+{
+    return finalizada;
+}
+
+//Este metodo va a ordenar las respuestas y printearlas por consola
+void Encuesta::mostrarResultados()
+{
+    //TODO: implementar metodo
+
+    //ordenar resultados
+
+    //mostrar resultados
+
+    cout << "Resultados cantidad de encuestados: " << cantidadEncuestados; 
+}
+/*===================================================================*/
+
+//TODO
+Encuesta crearEncuesta()
+{
+       
+    Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
+    string opciones[2];
+    opciones[0] = "opcion 1";
+    opciones[1] = "opcion 2";
+    Pregunta pregunta1("Pregunta?", opciones);
+    Pregunta pregunta2("Pregunta 2?", opciones);
+    preguntas[0] =  pregunta1;
+    preguntas[1] =  pregunta2;
+    Encuesta encuesta("pepe", preguntas);
+    return encuesta;
+}
