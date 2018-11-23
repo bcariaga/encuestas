@@ -25,9 +25,10 @@ const string PREGUNTA_PALABRA_ESCAPE = "nn";
 class Pregunta
 {
 private:
-    string textoPregunta; //el enunciado de la pregunta Ej: "¿cual es tu comida favorita?"
-    string* opciones; //respuestas disponibles para la pregunta.
-    bool validarRespuesta(string respuesta); 
+    string textoPregunta;   //el enunciado de la pregunta Ej: "¿cual es tu comida favorita?"
+    string* opciones;       //respuestas disponibles para la pregunta.
+    int cantdeopciones;     //para poder iterar dentro de las opciones
+    bool validarRespuesta(string respuesta);
 public:
     Pregunta();
     Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES]);
@@ -86,10 +87,11 @@ main()
 
 /*=======================Metodos Clase Pregunta======================*/
 //constructor Pregunta
-Pregunta::Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES])
+Pregunta::Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES], int _cantdeopciones)
 {
     textoPregunta = _textoPregunta;
-    opciones = _opciones;    
+    opciones = _opciones;
+    cantdeopciones = _cantdeopciones;                //SE CREO UNA VARIABLE NUEVA PARA CREARLE LOS BUCLES DE LAS OPCIONES
 }
 Pregunta::Pregunta()
 {
@@ -124,20 +126,18 @@ string Pregunta::preguntar()
 // o que la opcion este dentro del rango de opciones permitidas
 bool Pregunta::validarRespuesta(string respuesta)
 {
-    //TODO:
-
-    //si respuesta es la palabra de escape el resultado debe ser true
-
-    // si respuesta esta en las opciones disponibles el resultado debe ser true
-
-    // si no se cumplieron los pasos anteriores es false
     
-    //posible solucion (ver como obtener la cantidad de opciones)
-    // return respuesta == PREGUNTA_PALABRA_ESCAPE || (stoi(respuesta) <= ¿cantidad de opciones? && stoi(respuesta) > 1);
-
-    //nota: stoi trata de convertir un string en un int
-    return true;
-    
+    for(int j = 0; j <= cantdeopciones; j++) {
+        if (respuesta == PREGUNTA_PALABRA_ESCAPE) {
+            cout << "opcion escape" << endl;
+            return true;
+        } else if  (respuesta == opciones[j]) {
+            cout << "opcion valida" << endl;
+            return true;
+        }
+    }
+    cout << "opcion invalida" << endl;
+    return false;
 }
 /*===================================================================*/
 
@@ -148,18 +148,20 @@ bool Pregunta::validarRespuesta(string respuesta)
 void Sujeto::responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
 {
     //por cada pregunta...
-
+    for(int i =0; i<ENCUESTA_CANTIDAD_PREGUNTAS; i++)
+    {
         //pregunto (Pregunta.preguntar())
+        string respuesta = preguntas[i].preguntar();
         //guardo en la posicion de la pregunta la respuesta en array de respuestas   
-        // ej.: string respuesta = preguntas[0].preguntar();
-        // respuestas[0] = respuesta;
+        respuestas[i] = respuesta;
+    }
 }
 //devuelte la respuesta para el indice de la pregunta dada
 string Sujeto::getRespuesta(int indice)
 {
     //busco la respuesta de mi array de respuestas
+    return respuestas[indice];//retorno respuesta
     
-    //retorno respuesta
 }
 /*===================================================================*/
 
@@ -224,13 +226,28 @@ Encuesta crearEncuesta()
 {
        
     Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
-    string opciones[2];
-    opciones[0] = "opcion 1";
-    opciones[1] = "opcion 2";
-    Pregunta pregunta1("Pregunta?", opciones);
-    Pregunta pregunta2("Pregunta 2?", opciones);
-    preguntas[0] =  pregunta1;
-    preguntas[1] =  pregunta2;
-    Encuesta encuesta("pepe", preguntas);
+    string opciones[10];
+    opciones[0] = "PIZZA";
+    opciones[1] = "HAMBURGUESA";
+    opciones[2] = "MILANESA";
+    opciones[3] = "FIDEOS";                 //ESTO LO PROBE EN EL MAIN, SOLO LO INTERNO DE CREAR ENCUESTA Y FUNCIONA
+    opciones[4] = "PESCADO";                //PERO ES SIN NUMEROS, HABRIA QUE COPIAR LAS REPSUESTAS EN MAYUSCULAS
+    opciones[5] = "ENSALADA";
+    opciones[6] = "EMPANADA";
+    opciones[7] = "OTRA";
+    string opciones2[5];
+    opciones2[0] = "CARTAS";
+    opciones2[1] = "JUEGOS DE MESA";
+    opciones2[2] = "VIDEO JUEGOS";
+    opciones2[3] = "DEPORTES";
+    opciones2[4] = "OTRO";
+
+    Sujeto suj;
+    Pregunta pregunta1("�Cual es su comida favorita?", opciones, 7);
+    Pregunta pregunta2("�Cual es su juego favorito?", opciones2, 5);
+    preguntas[0] = pregunta1;
+    preguntas[1] = pregunta2;
+    Encuesta encuesta("Anonimo", preguntas);
+    encuesta.encuestar(suj);
     return encuesta;
 }
