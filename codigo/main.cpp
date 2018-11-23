@@ -4,16 +4,16 @@ using namespace std;
 /*==========================Configuracion==============================*/
 
 //para delimitar la cantidad de sujetos a encuestar (Encuesta::sujetosEncuestados)
-const int ENCUESTA_CANTIDAD_MAXIMA_SUJETOS = 500; 
+const int ENCUESTA_CANTIDAD_MAXIMA_SUJETOS = 500;
 
 //para delimitar la cantidad de preguntas a realizar (Encuesta::preguntas)
-const int ENCUESTA_CANTIDAD_PREGUNTAS = 2; 
+const int ENCUESTA_CANTIDAD_PREGUNTAS = 2;
 
 //para delimitar la cantidad de preguntas a realizar (Encuesta::preguntas)
-const int PREGUNTA_CANTIDAD_MAXIMA_OPCIONES = 10; 
+const int PREGUNTA_CANTIDAD_MAXIMA_OPCIONES = 10;
 
 //para controlar la palabra de escape
-const string PREGUNTA_PALABRA_ESCAPE = "nn"; 
+const string PREGUNTA_PALABRA_ESCAPE = "nn";
 
 /*===================================================================*/
 
@@ -31,7 +31,7 @@ private:
     bool validarRespuesta(string respuesta);
 public:
     Pregunta();
-    Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES]);
+    Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES], int _cantdeopciones);
     string preguntar();
 };
 
@@ -110,7 +110,7 @@ string Pregunta::preguntar()
     //mientras que la respuesta no sea valida...
     while(!respuestaValida){
         //printeo la pregunta (el enunciado)
-        cout << textoPregunta << endl; 
+        cout << textoPregunta << endl;
         cout << "ingrese el numero de la opcion que corresponde (nn para salir)" << endl;
         //leo la respusta
         cin >> respuesta;
@@ -126,7 +126,7 @@ string Pregunta::preguntar()
 // o que la opcion este dentro del rango de opciones permitidas
 bool Pregunta::validarRespuesta(string respuesta)
 {
-    
+
     for(int j = 0; j <= cantdeopciones; j++) {
         if (respuesta == PREGUNTA_PALABRA_ESCAPE) {
             cout << "opcion escape" << endl;
@@ -152,7 +152,7 @@ void Sujeto::responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
     {
         //pregunto (Pregunta.preguntar())
         string respuesta = preguntas[i].preguntar();
-        //guardo en la posicion de la pregunta la respuesta en array de respuestas   
+        //guardo en la posicion de la pregunta la respuesta en array de respuestas
         respuestas[i] = respuesta;
     }
 }
@@ -161,7 +161,7 @@ string Sujeto::getRespuesta(int indice)
 {
     //busco la respuesta de mi array de respuestas
     return respuestas[indice];//retorno respuesta
-    
+
 }
 /*===================================================================*/
 
@@ -178,11 +178,11 @@ Encuesta::Encuesta(string _nombre, Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNT
 void Encuesta::encuestar(Sujeto sujeto)
 {
     //valido no haber superado el tope de sujetos a encuestar
-    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS) 
+    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS)
         finalizada = true;
-    
+
     //si puedo seguir encuestando
-    if (!finalizada) 
+    if (!finalizada)
     {
         //pido al sujeto que responda
         sujeto.responder(preguntas);
@@ -196,9 +196,9 @@ void Encuesta::encuestar(Sujeto sujeto)
             //agrego el sujeto al array de sujetos encuestados
             sujetosEncuestados[cantidadEncuestados] = sujeto;
             // incremento el indice de encuestados
-            cantidadEncuestados++; 
+            cantidadEncuestados++;
         }
-        
+
     }
 }
 
@@ -217,14 +217,14 @@ void Encuesta::mostrarResultados()
 
     //mostrar resultados
 
-    cout << "Resultados cantidad de encuestados: " << cantidadEncuestados; 
+    cout << "Resultados cantidad de encuestados: " << cantidadEncuestados;
 }
 /*===================================================================*/
 
 //TODO
 Encuesta crearEncuesta()
 {
-       
+
     Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
     string opciones[10];
     opciones[0] = "PIZZA";
