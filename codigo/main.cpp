@@ -194,9 +194,6 @@ public:                      //si dice true termino la encuesta sino no sigue
     void encuestar(Sujeto sujeto);
     bool getFinalizada();
     void mostrarResultados();
-    Pregunta getPregunta(int indice){ //debug
-        return preguntas[indice];
-    }
 };
 
 /*===================================================================*/
@@ -249,57 +246,81 @@ void Encuesta::encuestar(Sujeto sujeto)
 
 bool Encuesta::getFinalizada()//devuelve lo que es finalizada
 {
-    return finalizada;                                    //NO SE SI ESTO ESTA BIEN??? || EN CONSTRUCCION||
+    return finalizada;                                    
 }
 
 //Este metodo va a ordenar las respuestas y printearlas por consola
 void Encuesta::mostrarResultados()
 {
     cout << endl;
+    cout << "Encuesta : " << nombre << endl;
+    cout << endl;
     cout << "Resultados : " << endl;
+    cout << endl;
     cout << "Cantidad de encuestados: " << cantidadEncuestados << endl;
+    cout << endl;
     //por cada pregunta
     for(int indicePreguntas = 0; indicePreguntas < ENCUESTA_CANTIDAD_PREGUNTAS; indicePreguntas++)
     {
         // busco la pregunta dentro del array de preguntas (atributo de Encuesta)
         Pregunta preguntaEnIteracion = preguntas[indicePreguntas];
-
+        cout << endl;
+        cout << "Resultado de pregunta: " << preguntaEnIteracion.getTextoPregunta() << endl << endl;
+        cout << endl;
         int cantidadOpciones = preguntaEnIteracion.getcantOpciones();
         //creo un array para contar las opciones elegidas (lo inicializo en 0)
         int opcionesContador[cantidadOpciones] = {0};
+         //copio el array para para ordenarlo
+        int opcionesOrdenadas[cantidadOpciones] = {0};
         //reviso los encuestados
         for(int indiceSujetosEncuestados = 0; indiceSujetosEncuestados < cantidadEncuestados; indiceSujetosEncuestados++)
         {
             int opcionElegida = sujetosEncuestados[indiceSujetosEncuestados].getRespuesta(indicePreguntas);
             //aumento el contador de la opcion elegida
             opcionesContador[opcionElegida]++;
+            opcionesOrdenadas[opcionElegida]++;
         }
 
-        //ordeno
+        //ordeno (ordenamiento por seleccion)
 
-        //por cada opcion (en el contador)
         for(int indiceOpcion = 0; indiceOpcion < cantidadOpciones - 1; indiceOpcion++)
         {
-            //comparo la opcion actual con la sigiente, si es mas chica:
-            if (opcionesContador[indiceOpcion] < opcionesContador[indiceOpcion + 1])
+            int minimo = indiceOpcion;
+
+            for(int i = indiceOpcion + 1 ; i < cantidadOpciones; i++ )
             {
-                //almaceno el valor (la cantidad) en una variable temporal
-                int cantTemp = opcionesContador[indiceOpcion];
-                //asigno en la posicion actual el proximo valor (porque es mas grande, logicamente)
-                opcionesContador[indiceOpcion] = opcionesContador[indiceOpcion + 1];
-                //dejo el valor temporal en la proxima comparacion
-                opcionesContador[indiceOpcion  + 1] = cantTemp;
-                //la puestro por pantalla el nombre de la opcion y el conteo
+                if(opcionesOrdenadas[minimo] < opcionesOrdenadas[i])
+                {
+                    minimo = i;
+                }
             }
-          
+
+            int aux = opcionesOrdenadas[indiceOpcion];
+            opcionesOrdenadas[indiceOpcion] = opcionesOrdenadas[minimo];
+            opcionesOrdenadas[minimo] = aux;
+
         }
 
-        //muestro
-        cout << endl << "Respuestas de: " << preguntaEnIteracion.getTextoPregunta() << endl << endl;
-        for(int opcion = 0; opcion < cantidadOpciones; opcion++)
+        for(int a = 0; a < cantidadOpciones; a++)
         {
-            cout << preguntas[indicePreguntas].getOpcion(opcion) << " : " << opcionesContador[opcion] << endl;
+            //valor actual
+            int valor = opcionesOrdenadas[a];
+
+            for(int b = 0; b < cantidadOpciones; b++)
+            {
+                if (opcionesContador[b] == valor)
+                {
+                   cout << preguntas[indicePreguntas].getOpcion(b) << " : " << valor << endl;
+                   //lo limpio para no volver a matchear
+                   opcionesContador[b] = -1;
+                }
+
+            }
+
+            //opcion que matcha por valor
+
         }
+        cout << endl;
     }
 }
 /*===================================================================*/
@@ -329,7 +350,7 @@ void iniciarEncuesta()
 
     Pregunta pregunta1("Cual es su comida favorita?", opciones, 8);//creo el obj pregunta1 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
     Pregunta pregunta2("Cual es su juego favorito?", opciones2, 5);//creo el obj pregunta2 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
-    
+
     preguntas[0] = pregunta1;
     preguntas[1] = pregunta2;
 
