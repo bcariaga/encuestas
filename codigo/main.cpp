@@ -22,10 +22,10 @@ private:
     string* opciones; // opciones es un array que contiene las posibles respuestas a las preguntas
 public:
     //Pregunta();// es un constructor que no recibe parametros, solo inicia la variables vacias
-    Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES], int _cantOpciones);
+    Pregunta();
     //este constructor en cambio si recibe parametros, que son 3 en este caso
     //son: el texto de la pregunta, el array de opciones, y la cantidad de opciones que recibe por cada pregunta
-    Pregunta();
+    Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES], int _cantOpciones);
     string getOpcion(int indice); //devuleve el texto de la opcion para mostrarlo por pantalla
     string getTextoPregunta(); //devuleve el texto de la opcion para mostrarlo por pantalla
     int getcantOpciones(); //devulte el numero de opciones, util para iterar
