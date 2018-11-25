@@ -9,29 +9,23 @@ Las clases del programa seguirán el siguiente esquema:
 
 ![uml encuestas](uml_encuesta.png)
 
+La consigna del siguiente trabajo práctico consiste en poder armar una estructura de datos que permita encuestar como máximo a 500 personas de entre 18 y 23 años, con el fin de capturar datos referentes a comidas y juegos del gusto del encuestado, y una vez finalizada, poder exhibir los resultados obtenidos de la totalidad, en forma ordenada.
+
 ### Encuesta
 
-Podemos ver que dentro de la clase **Encuesta** guardamos un array de **Sujeto** (_sujetosEncuestados_) y un array del tipo **Pregunta**, este atributo nos permite manejar una encuesta con todas sus preguntas necesarias.
+Como primera medida, comenzamos el programa a través de un procedimiento que inicia la encuesta, es decir, en él,  se describen las &quot;opciones&quot; a través de dos arrays de tipo string, y se instancia un objeto **preguntas** de **clase Pregunta** , el cual será otro array que contendrá, en este caso, los objetos **pregunta1** y **pregunta2** , con las preguntas de la encuesta, el array de opciones correspondiente a cada pregunta y la cantidad de opciones, para luego, comenzar el proceso que utilizará los atributos de las diferentes clases creadas, por medio de sus respectivos métodos públicos y privados.
 
-Ademas contamos la cantidad se sujetos encuestados a través de la propiedad de tipo entero _cantidadSujetosEncuestados_.
-
-El método **finalizada()** nos devuelve un bool, que nos va a indicar si la encuesta todavía puede _recibir_ mas sujetos para encuestar. Cuando **finalizada()** retorne _true_ la encuesta no podrá seguir realizando preguntas.
-
-Para llamar al procedimiento **encuestar** debemos pasarle un **Sujeto**, el resultado, se guardara en el array **SujetosEncuestados** de la **Encuesta**..
+Por medio de la clase Encuesta, contamos con el atributo **preguntas** (de tipo **Pregunta** ), el cual permitirá manejar la encuesta con las preguntas correspondientes. También se posee el atributo **cantidadDeEncuestados** de tipo entero, con el que estaremos al tanto de la cantidad de personas que se vayan encuestando; una variable privada **nombre** , de tipo string, en la que se guardará el nombre de la encuesta. Seguidamente, contamos con el método privado **finalizada** (de tipo bool) **,** que indicará si es posible tomar más sujetos a encuestar, ya sea por haber llegado al tope del array o por haber ingresado la palabra &quot;NN&quot; para finalizar el proceso. Por su parte, el array de tipo Sujeto denominado **sujetosEncuestados,** guardará la respuesta que se otorgue dentro del procedimiento público **encuestar.** Asimismo, el método **getFinalizada** , es utilizado por el procedimiento que inicia la encuesta para verificar que sea posible realizarla. **MostrarEncuesta** se encarga de obtener los resultados de la encuesta (guardados en cada **Sujeto** del atributo **respuestas,** array de int), ordenarlos de mayor a menor y mostrarlos por pantalla.
 
 ### Sujeto
 
-El procedimiento **encuestar** (de **Encuesta**) va a ejecutar **responder** del **Sujeto** pasandole como parámetro el array de **Pregunta**, los resultados (las respuestas) se guardaran en la propiedad **respuestas** del sujeto.
+Por otro lado, generamos la clase **Sujeto** , la cual va a contener un array **respuestas** (de tipo entero)en el que se guardará cada respuesta de los usuarios y un método **responder** , que seráejecutado medianteel procedimiento **encuestar** de la clase **Encuesta** , pasándole el array que contiene las preguntas de la encuesta (de tipo Pregunta) como parámetro, a fin de corroborar si el usuario respondió en su totalidad.
 
 ### Pregunta
 
-Cada **Pregunta** cuenta con la propiedad **textoPregunta** del tipo string que va a reflejar el enunciado de la pregunta Ej: "_¿Cuál es su comida favorita?
-_" y el atributo **opciones** va a ser un array de strings que va a mostrar las opciones disponibles de la pregunta Ej: "Pizza, Hamburguesa, Milanesa, Fideos, Pescado, Ensalada (cualquier tipo), Empanada, otra."
-
-La función **preguntar()** va a mostrar por pantalla el texto de la pregunta y las opciones y leerá la respuesta del usuario, antes de devolver el resultado llamara a la función privada **validarRespuesta()** la cual devuelve un bool en true si la respuesta existe en las opciones o false si no existe.
+Finalmente, se describe la clase **Pregunta** , donde el atributo **textoPregunta** contendrá el enunciado de la pregunta a realizar, el atributo **opciones** , será el array generado en el procedimiento **iniciarEncuesta** , de donde se obtendrán las opciones de Comidas y Juegos, pedidas por cada pregunta que se le haga al encuestado. Se mostrará cada pregunta con sus opciones a fin de que se obtenga la respuesta del usuario, donde **validarRespuesta** (método privado de tipo bool) verifique que la respuesta corresponda sólo a las opciones otorgadas. El atributo privado **obtenerNumeroOpcion** será el encargado de tomar cada opción como tipo de dato string para luego, devolverlo como tipo de dato entero. Por parte de los métodos públicos contamos con el método de tipo entero, **preguntar** ,  que exhibe los enunciados de las preguntas y opciones, junto con la validación de la respuesta del usuario para finalmente retornar esta opción elegida.
 
 ## Flujo
 
-Mirando desde el `main` el flujo seria algo asi:
 
 ![flujo_encuesta](flujo_encuesta.png)
