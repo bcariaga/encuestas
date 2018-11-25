@@ -60,6 +60,7 @@ string Pregunta::getOpcion(int indice)
     return opciones[indice];
 }
 
+//DANIELA
 int Pregunta::preguntar()//es un metodo que devuelve un int(return respuesta) que representa la opcion elegida
 {
     bool respuestaValida = false;//lo inicio en falso
@@ -94,6 +95,7 @@ int Pregunta::preguntar()//es un metodo que devuelve un int(return respuesta) qu
     }
     return opcionElegida;//regresa la opcion elegida
 }
+//BRAIAN
 bool Pregunta::validarRespuesta(int opcion)//validarRespuesta devuelve un bool(true o false)
 {
     //chequea que la opcion elegida este dentro del rango de las opciones disponibles para la pregunta
@@ -109,6 +111,7 @@ bool Pregunta::validarRespuesta(int opcion)//validarRespuesta devuelve un bool(t
     }
 }
 
+//BRAIAN
 //creo este metodo para pasar el numero de la opcion (string) a opcion(int) (y no usar stoi)
 //es mas comodo tratarlo como int para poder usarlo de indice
 int  Pregunta::obtenerNumeroOpcion(string opcion)
@@ -212,6 +215,7 @@ Encuesta::Encuesta()
     preguntas = _preguntas;
     finalizada = false;
 }
+//NADINA
 //Valida que se pueda seguir encuestando
 //Recibe un objeto Sujeto y "realiza" las preguntas
 void Encuesta::encuestar(Sujeto sujeto)
@@ -249,6 +253,7 @@ bool Encuesta::getFinalizada()//devuelve lo que es finalizada
     return finalizada;                                    
 }
 
+//BRAIAN
 //Este metodo va a ordenar las respuestas y printearlas por consola
 void Encuesta::mostrarResultados()
 {
@@ -325,6 +330,7 @@ void Encuesta::mostrarResultados()
 }
 /*===================================================================*/
 
+//NADINA
 void iniciarEncuesta()
 {
 
