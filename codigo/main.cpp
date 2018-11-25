@@ -2,6 +2,7 @@
 using namespace std;
 
 /*==========================Configuracion==============================*/
+
 const int ENCUESTA_CANTIDAD_MAXIMA_SUJETOS = 500; //es una constante para el maximo de gente a encuestar
 const int ENCUESTA_CANTIDAD_PREGUNTAS = 2;//maximo de preguntas a realizar, en este caso 2
 const int PREGUNTA_CANTIDAD_MAXIMA_OPCIONES = 10;//maximo de opciones para las respuestas (en este caso 10 para cada una)
@@ -13,18 +14,20 @@ const string PREGUNTA_PALABRA_ESCAPE = "NN";//es una constante para abandonar el
 class Pregunta
 {
 private:
-    string textoPregunta; // textoPregunta contiene el enunciado de la pregunta Ej: "�cual es tu comida favorita?"
-    string* opciones; // opciones es un array que contiene las posibles respuestas a las preguntas
-    bool validarRespuesta(string respuesta);// es un metodo privado, se usa para comprobar si lo que escribe el
+    bool validarRespuesta(int opcion);// es un metodo privado, se usa para comprobar si lo que escribe el
                                             // encuestado es una opcion valida o no (si esta en el array opciones o no)
     int cantdeopciones;//cantdeopciones es una variable para crear los bucles de las opciones mas abajo
+    int obtenerNumeroOpcion(string opcion); //pasa el string de la opcion a un int
+    string textoPregunta; // textoPregunta contiene el enunciado de la pregunta Ej: "�cual es tu comida favorita?"
+    string* opciones; // opciones es un array que contiene las posibles respuestas a las preguntas
 public:
-    Pregunta();// es un constructor que no recibe parametros, solo inicia la variables vacias
+    //Pregunta();// es un constructor que no recibe parametros, solo inicia la variables vacias
     Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES], int _cantdeopciones);
     //este constructor en cambio si recibe parametros, que son 3 en este caso
     //son: el texto de la pregunta, el array de opciones, y la cantidad de opciones que recibe por cada pregunta
-
-    string preguntar(); //metodo preguntar()
+    Pregunta();
+    string getOpcion(int indice); //devuleve el texto de la opcion para mostrarlo por pantalla
+    int preguntar(); //metodo preguntar devuelve la opcion elegida
 };
 
 /*=======================Metodos Clase Pregunta======================*/
@@ -37,49 +40,95 @@ Pregunta::Pregunta(string _textoPregunta, string _opciones[PREGUNTA_CANTIDAD_MAX
 }
 Pregunta::Pregunta()//todo esto lo ya dicho antes de la que inicializa sin parametros
 {
-    textoPregunta = "";
+    textoPregunta = "no hay texto";
+    string _opciones[1];
+    _opciones[0] = "no hay opcion";
+    opciones = _opciones;
 }
 
-string Pregunta::preguntar()//es un metodo que devuelve una string(return respuesta)
+string Pregunta::getOpcion(int indice){
+    return opciones[indice];
+}
+int Pregunta::preguntar()//es un metodo que devuelve un int(return respuesta) que representa la opcion elegida
 {
-
     bool respuestaValida = false;//lo inicio en falso
 
     string respuesta;
+    int opcionElegida = -1;
 
     //mientras que la respuesta no sea valida...
-    while(!respuestaValida){
+    while(!respuestaValida)
+    {
         cout << textoPregunta << endl;//hago una salida por pantalla de lo que es la pregunta
-        cout << "ingrese en mayusculas la opcion que corresponda (NN para salir)" << endl;
-        for (int x =0; x<cantdeopciones;x++)//inicio un bucle
+        cout << "ingrese en la opcion que corresponda (NN para salir)" << endl;
+        for (int x = 0; x < cantdeopciones; x++)//inicio un bucle
         {
-            cout << opciones[x] << endl;//donde x va imprimiendo cada opcion a medida que aumenta
-        }                               //hasta llegar a la cantidad de opciones menos 1
-                                        //opciones es el array ya mencionado
+            cout << x+1 << " : " << opciones[x] << endl; //donde x va imprimiendo cada opcion a medida que aumenta
+        }                                               //hasta llegar a la cantidad de opciones menos 1
+                                                        //opciones es el array ya mencionado
 
-        cin >> respuesta;//leo la respuesta del encuestado y la guardo en respuesta
+        cin >> respuesta; //leo la respuesta del encuestado y la guardo en respuesta
 
-        respuestaValida = validarRespuesta(respuesta);//repsuestaValida va a guardar o true o false
-    }                                                //dependiendo de lo que recibe validarRespuesta
-    return respuesta;//regresa la string respuesta
+        if (respuesta != PREGUNTA_PALABRA_ESCAPE)
+        {
+            opcionElegida = obtenerNumeroOpcion(respuesta) - 1; //resto uno porque es base 0 (pero el usuario no sabe)
+            respuestaValida = validarRespuesta(opcionElegida);  //repsuestaValida va a guardar o true o false
+        }
+        else
+        {
+            //si es la palabra de escape la considero valida para cortar el bucle
+            respuestaValida = true;
+        }
+
+
+    }
+    return opcionElegida;//regresa la opcion elegida
 }
-bool Pregunta::validarRespuesta(string respuesta)//validarRespuesta devuelve un bool(true o false)
+bool Pregunta::validarRespuesta(int opcion)//validarRespuesta devuelve un bool(true o false)
 {
-//chequea que el texto del encuestado sea igual a nuestras opciones, esto incluye mayusculas
-//(BRIAN NO LE PUSE NUMEROS SOLO TEXTO!! no creo haga falta el stoi ya que no lo aprendimos,creo? -y sinceramente no entendi tampoco como usarlo-)
-for(int j = 0; j<=cantdeopciones;j++) {//creamos otro bucle que recorre todas las opciones
-    if (respuesta == PREGUNTA_PALABRA_ESCAPE) { //analiza si lo ingresado por el encuestado es NN
-        cout << "opcion escape" << endl;
-        return true;
-    } else if  (respuesta == opciones[j]) {//analiza si lo ingresado por el encuestado es una opcion valida
-        cout << "opcion valida" << endl;
+    //chequea que la opcion elegida este dentro del rango de las opciones disponibles para la pregunta
+    if (opcion < cantdeopciones && opcion >= 0)
+    {
+        cout << endl << "opcion valida" << endl << endl; //dejo un espacio adicional
         return true;//cuando devuelve true es porque es una opcion valida ya sea en NN o del array de opciones (aca)
     }
-}
-    cout << "opcion invalida" << endl;//cuando sale del bucle, significa que el encuestado no ingreso algo valido
-    return false;//devuelve false entonces
+    else
+    {
+        cout << endl << "opcion invalida" << endl << endl;;//cuando sale del bucle, significa que el encuestado no ingreso algo valido
+        return false;//devuelve false entonces
+    }
 }
 
+//creo este metodo para pasar el numero de la opcion (string) a opcion(int) (y no usar stoi)
+//es mas comodo tratarlo como int para poder usarlo de indice
+int  Pregunta::obtenerNumeroOpcion(string opcion)
+{
+    int resultado = -1;
+    if (opcion == "1")
+        resultado = 1;
+    else if(opcion == "2")
+        resultado = 2;
+    else if(opcion == "3")
+        resultado = 3;
+    else if(opcion == "4")
+        resultado = 4;
+    else if(opcion == "5")
+        resultado = 5;
+    else if(opcion == "6")
+        resultado = 6;
+    else if(opcion == "7")
+        resultado = 7;
+    else if(opcion == "8")
+        resultado = 8;
+    else if(opcion == "9")
+        resultado = 9;
+    else if(opcion == "10")
+        resultado = 10;
+    else if(opcion == "11")
+        resultado = 11;
+
+    return resultado;
+}
 
 /*===================================================================*/
 /*==================Prototipo Clase Sujeto========================*/
@@ -87,29 +136,37 @@ for(int j = 0; j<=cantdeopciones;j++) {//creamos otro bucle que recorre todas la
 class Sujeto
 { //aca en sujeto vamos a guardar todas las respuestas de todos los sujetos para luego mostrar los resultados
 private://EN CONSTRUCCION, ASIQUE NO SE HABLE MAS POR AHORA (hay que terminarlo)
-    string respuestas[ENCUESTA_CANTIDAD_PREGUNTAS]; //array con las respuestas generadas
+    int respuestas[ENCUESTA_CANTIDAD_PREGUNTAS]; //array con las respuestas generadas
 public:
     void responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS]);//metodo
-    string getRespuesta(int indice);//metodo
+    int getRespuesta(int indice);//metodo
 };
 
 //esta funcion llena el array de respuestas
 //usa los metodos de Pregunta para obtener respuestas
 void Sujeto::responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
 {
-    for(int i =0; i<ENCUESTA_CANTIDAD_PREGUNTAS; i++)
+    bool respondioTodo = false;
+    int indicePregunta = 0;
+
+    while(!respondioTodo)
     {
-        string respuesta = preguntas[i].preguntar();
-          respuestas[i] = respuesta;
+        int respuesta = preguntas[indicePregunta].preguntar();
+        respuestas[indicePregunta] = respuesta;
+        indicePregunta++;
+        //corto ya respondio todas las preguntas o si es la respuesta de escape
+        if (indicePregunta > ENCUESTA_CANTIDAD_PREGUNTAS - 1 || respuesta < 0)
+        {
+            respondioTodo = true;
+        }
     }
+
 }
 //devuelte la respuesta para el indice de la pregunta dada
-string Sujeto::getRespuesta(int indice)
+int Sujeto::getRespuesta(int indice)
 {
     return respuestas[indice];
 };
-//REITERO, RETOMAMOS SUJETO LUEGO DE FINALIZADO(?)
-
 
 /*==================Prototipo Clase Encuesta========================*/
 class Encuesta//
@@ -122,27 +179,40 @@ private:
     int cantidadEncuestados = 0; //contador de sujetos encuestados
     bool finalizada = false; //flag(bandera) indica si se termino la encuesta o no
 public:                      //si dice true termino la encuesta sino no sigue
-    Encuesta(string _nombre, Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNTAS]);
+    Encuesta(string _nombre, Pregunta *_preguntas);
+    Encuesta();
     void encuestar(Sujeto sujeto);
     bool getFinalizada();
     void mostrarResultados();
+    Pregunta getPregunta(int indice){ //debug
+        return preguntas[indice];
+    }
 };
 
 /*===================================================================*/
 /*=======================Metodos Clase Encuesta=======================*/
 //constructor Encuesta, tambien recibe dos parametros,
-Encuesta::Encuesta(string _nombre, Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
+Encuesta::Encuesta(string _nombre, Pregunta *_preguntas)
 {
     nombre = _nombre;
     preguntas = _preguntas;
+    finalizada = false;
+}
+Encuesta::Encuesta()
+{
+    nombre = "s/n";
+    Pregunta _preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
+    preguntas = _preguntas;
+    finalizada = false;
 }
 //Valida que se pueda seguir encuestando
 //Recibe un objeto Sujeto y "realiza" las preguntas
 void Encuesta::encuestar(Sujeto sujeto)
 {
     //valido no haber superado el tope de sujetos a encuestar
-    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS)
+    if (cantidadEncuestados > ENCUESTA_CANTIDAD_MAXIMA_SUJETOS){
         finalizada = true;
+    }
 
     //si puedo seguir encuestando
     if (!finalizada)
@@ -150,9 +220,10 @@ void Encuesta::encuestar(Sujeto sujeto)
         //pido al sujeto que responda
         sujeto.responder(preguntas);
         //valido si hay que parar (si el usuario responde nn en la 1er pregunta)
-        if(sujeto.getRespuesta(0) == PREGUNTA_PALABRA_ESCAPE )
+        if(sujeto.getRespuesta(0) < 0 )
         {
             finalizada = true;
+            cout << "palabra de escape" << endl;
         }
         else
         {
@@ -165,7 +236,6 @@ void Encuesta::encuestar(Sujeto sujeto)
     }
 }
 
-
 bool Encuesta::getFinalizada()//devuelve lo que es finalizada
 {
     return finalizada;                                    //NO SE SI ESTO ESTA BIEN??? || EN CONSTRUCCION||
@@ -173,24 +243,102 @@ bool Encuesta::getFinalizada()//devuelve lo que es finalizada
 
 //Este metodo va a ordenar las respuestas y printearlas por consola
 void Encuesta::mostrarResultados()
-{                                                                    //EN CONSTRUCCION
-    //TODO: implementar metodo
-    //ordenar resultados
+{
+    //por cada pregunta
+    for(int indicePreguntas = 0; indicePreguntas < ENCUESTA_CANTIDAD_PREGUNTAS; indicePreguntas++)
+    {
+        //creo un array para contar las opciones elegidas (lo inicializo en 0)
+        int opcionesContador[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES] = {0};
+        //reviso los encuestados
+        for(int indiceSuejetosEncuestados = 0; indiceSuejetosEncuestados < cantidadEncuestados; indiceSuejetosEncuestados++)
+        {
+            int opcionElegida = sujetosEncuestados[indiceSuejetosEncuestados].getRespuesta(indicePreguntas);
+            //aumento el contador de la opcion elegida
+            opcionesContador[opcionElegida]++;
+        }
+
+        //ordeno y muestro
+
+        //por cada opcion (en el contador)
+        for(int indiceOpcion = 0; indiceOpcion < PREGUNTA_CANTIDAD_MAXIMA_OPCIONES; indiceOpcion++)
+        {
+            //comparo la opcion actual con la sigiente, si es mas grande
+            if (opcionesContador[indiceOpcion] > opcionesContador[indiceOpcion + 1])
+            {
+                //la puestro por pantalla el nombre de la opcion y el conteo
+                cout << preguntas[indicePreguntas].getOpcion(indiceOpcion) << " : " << opcionesContador[indiceOpcion] << endl;
+            }
+            else
+            {
+                //si no es mas grande
+                //almaceno el valor (la cantidad) en una variable temporal
+                int cantTemp = opcionesContador[indiceOpcion];
+                //asigno en la posicion actual el proximo valor (porque es mas grande)
+                opcionesContador[indiceOpcion] = opcionesContador[indiceOpcion + 1];
+                //dejo el valor temporal en la proxima comparacion
+                opcionesContador[indiceOpcion  + 1] = cantTemp;
+            }
+
+
+        }
+    }
+
+    // for(int indiceSuejetosEncuestados = 0; indiceSuejetosEncuestados < cantidadEncuestados; indiceSuejetosEncuestados++)
+    // {
+    //     respuestas1[indiceSuejetosEncuestados] = sujetosEncuestados[indiceSuejetosEncuestados].getRespuesta(0);
+    //     respuestas2[indiceSuejetosEncuestados] = sujetosEncuestados[indiceSuejetosEncuestados].getRespuesta(1);
+
+    // }
+
+
+    //inicio las arrays en 0
+    // int opcionesContador1[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES] = {0};
+    // int opcionesContador2[PREGUNTA_CANTIDAD_MAXIMA_OPCIONES] = {0};
+    // for(int i = 0; i < cantidadEncuestados; i++)
+    // {
+    //     int opcionElegida1 = respuestas1[i];
+    //     int opcionElegida2 = respuestas2[i];
+
+    //     //sumo en las opciones
+    //     opcionesContador1[opcionElegida1]++;
+    //     opcionesContador2[opcionElegida2]++;
+    // }
+
+
+    // for(int opciones = 0; opciones < PREGUNTA_CANTIDAD_MAXIMA_OPCIONES; opciones++)
+    // {
+
+    //     if (opcionesContador1[opciones] > opcionesContador1[opciones + 1])
+    //     {
+    //         cout << preguntas[0].getOpcion(opciones) << " : " << opcionesContador1[opciones] << endl;
+    //     }
+    //     else
+    //     {
+    //         int cantTemp = opcionesContador1[opciones];
+    //         opcionesContador1[opciones] = opcionesContador1[opciones + 1];
+    //         opcionesContador1[opciones  + 1] = cantTemp;
+    //     }
+
+
+    //     // cout << preguntas[1].getOpcion(opciones) << " : " << opcionesContador2[opciones] << endl;
+    // }
+
     //mostrar resultados
 
     cout << "Resultados cantidad de encuestados: " << cantidadEncuestados;
 }
 /*===================================================================*/
 
-void crearEncuesta()
+void iniciarEncuesta()
 {
-Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
+
+    //genero las opciones
     string opciones[8];
     opciones[0] = "PIZZA";
     opciones[1] = "HAMBURGUESA";
     opciones[2] = "MILANESA";
     opciones[3] = "FIDEOS";                 //genera un array de opciones para cada pregunta
-    opciones[4] = "PESCADO";                //PERO ES SIN NUMEROS, HABRIA QUE COPIAR LAS REPSUESTAS EN MAYUSCULAS
+    opciones[4] = "PESCADO";
     opciones[5] = "ENSALADA";
     opciones[6] = "EMPANADA";
     opciones[7] = "OTRA";
@@ -201,22 +349,36 @@ Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
     opciones2[3] = "DEPORTES";
     opciones2[4] = "OTRO";
 
-    Sujeto suj; //crea el objeto suj para usar el metodo encuestar de abajo(lo cual tambien esta en construccion ya que es de la clase sujeto)
-    Pregunta pregunta1("�Cual es su comida favorita?", opciones, 8);//creo el obj pregunta1 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
-    Pregunta pregunta2("�Cual es su juego favorito?", opciones2, 5);//creo el obj pregunta2 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
-    preguntas[0] = pregunta1;
+    //genero las preguntas
+    Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS];
+
+    //crea el objeto suj para usar el metodo encuestar de abajo(lo cual tambien esta en construccion ya que es de la clase sujeto)
+    Pregunta pregunta1("Cual es su comida favorita?", opciones, 8);//creo el obj pregunta1 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
+    Pregunta pregunta2("Cual es su juego favorito?", opciones2, 5);//creo el obj pregunta2 con tres parametros(nombre de la pregunta, el array de opciones para las repsuestas, la cantidad de opciones)
+    preguntas[0] = pregunta1; //preguntas esta afuera de los metodos
     preguntas[1] = pregunta2;
-    Encuesta encuesta("en1823CJ", preguntas); //crea el objeto encuesta y le manda dos parametros
+
+    //creo la encuesta
+    Encuesta encuesta = Encuesta("en1823CJ", preguntas); //crea el objeto encuesta y le manda dos parametros
                                              //el nombre de la encuesta y el array de objetos preguntas(pregunta1 y pregunta2)
-    encuesta.encuestar(suj);
-    //return encuesta;
+
+    //empiezo a encuestar
+    while(!encuesta.getFinalizada())
+    {
+        Sujeto sujeto = Sujeto();
+        encuesta.encuestar(sujeto);
+    }
+
+    //muestro los resultados
+    encuesta.mostrarResultados();
+
 }
 
 /*===================================================================*/
 /*===========================Main=====================================*/
 int main()
 {
-crearEncuesta();//aca solo se esta probando lo que es esto ultimo escrito (crearEncuesta())
-    //lo pusimos como void y se comento el return para solamente mostrar como funciona esto, hay que cambiarlo luego para todo el tp
+    iniciarEncuesta();
+
     return 0;
 }
