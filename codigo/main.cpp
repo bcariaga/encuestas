@@ -155,6 +155,7 @@ public:
     int getRespuesta(int indice);//metodo
 };
 
+//Daniela
 //esta funcion llena el array de respuestas
 //usa los metodos de Pregunta para obtener respuestas
 void Sujeto::responder(Pregunta preguntas[ENCUESTA_CANTIDAD_PREGUNTAS])
